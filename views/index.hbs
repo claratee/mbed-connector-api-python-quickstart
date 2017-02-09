@@ -28,13 +28,13 @@
         </div>
       </div>
     </div>
-    <div id="endpoints">
-    {{#each endpoints}}
-      <div class="row" id="{{name}}">
+    <div id="devices">
+    {{#each devices}}
+      <div class="row" id="{{id}}">
         <div class="small-12 columns">
           <div class="row">
             <div class="small-12 columns">
-              <h2>{{name}}</h2>
+              <h2>{{id}}</h2>
             </div>
           </div>
           <div class="row">
@@ -70,7 +70,7 @@
       $(function() {
         var socket = io();
 
-        $('#endpoints').children().each(function(index, element) {
+        $('#devices').children().each(function(index, element) {
           var _this = $(this);
           _this.find('.subscribe-presses').change(function() {
             if ($(this).is(":checked")) {
