@@ -1,5 +1,5 @@
 pip>=8.0.0
-mbed-connector-api>=1.0.1
+git+https://github.com/ARMmbed/mbed-cloud-sdk-python.git
 pybars>=0.0.4
 Flask>=0.10.1
 Flask-SocketIO>=2.1
