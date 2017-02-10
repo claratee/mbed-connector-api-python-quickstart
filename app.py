@@ -26,6 +26,7 @@ def index():
         while not e.is_done:
             time.sleep(1)
         devList[idx]['blinkPattern'] = e.value
+        #api.update_device(devPoint["id"], name="Michael Minion %d" % idx)
     print "Device List :", devList
     # fill out html using handlebar template
     handlebarJSON = {'devices': devList}
@@ -48,26 +49,27 @@ def disconnect():
 def subscribeToPresses(data):
 #    # Subscribe to all changes of resource /3200/0/5501 (button presses)
     print('subscribe_to_presses: ', data)
-#    e = connector.putResourceSubscription(data['endpointName'],'/3200/0/5501')
+# Note this is misspelled
+    e = api.add_subscribtion(data['endpointName'],'/3200/0/5501')
 #    while not e.isDone():
 #        None
 #    if e.error:
 #        print("Error: ",e.error.errType, e.error.error, e.raw_data)
 #    else:
-#        print("Subscribed Successfully!")
-#        emit('subscribed-to-presses')
+    print("Subscribed Successfully!")
+    emit('subscribed-to-presses')
 
 @socketio.on('unsubscribe_to_presses')
 def unsubscribeToPresses(data):
     print('unsubscribe_to_presses: ', data)
-#    e = connector.deleteResourceSubscription(data['endpointName'],'/3200/0/5501')
+    e = api.delete_subscription(data['endpointName'],'/3200/0/5501')
 #    while not e.isDone():
 #        None
 #    if e.error:
 #        print("Error: ",e.error.errType, e.error.error, e.raw_data)
 #    else:
-#        print("Unsubscribed Successfully!")
-#    emit('unsubscribed-to-presses',{"endpointName":data['endpointName'],"value":'True'})
+    print("Unsubscribed Successfully!")
+    emit('unsubscribed-to-presses',{"endpointName":data['endpointName'],"value":'True'})
 
 @socketio.on('get_presses')
 def getPresses(data):
