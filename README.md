@@ -1,15 +1,15 @@
 # mbed-connector-python-quickstart
-This is a quickstart application for the [mbed-connector-api-python](https://github.com/armmbed/mbed-connector-api-python) package. 
-The goal of this application is to get the user up and running, using the mbed-connector-python package and talking to devices through mbed Device Connector in under 5 min, 5 steps or less.
-The quickstart webapp is meant to be paired with the [quickstart embedded app](https://github.com/ARMmbed/mbed-client-quickstart). The quickstart web app will allow the user to visualize quickstart embedded devices and interact with them. 
+This is a quickstart application for the [mbed-cloud-sdk-python](https://github.com/ARMmbed/mbed-cloud-sdk-python) package. 
+The goal of this application is to get the user up and running, using the mbed-cloud python sdk package and talking to devices through mbed cloud client in under 5 min, 5 steps or less.
+The quickstart webapp is meant to be paired with the [quickstart embedded app](https://github.com/mbartling/mbed-cloud-client-example/tree/simple-client-qs-ethernet). The quickstart web app will allow the user to visualize quickstart embedded devices and interact with them. 
 
 ### Pre-requisites
-- A [mbed connector](https://connector.mbed.com) account and have generated an [API token](https://connector.mbed.com/#accesskeys)
-- A endpoint running the [mbed client quickstart example](https://github.com/ARMmbed/mbed-client-quickstart)
+- A [mbed cloud portal](https://portal.mbedcloud.com/) account and have generated an [API token](https://portal.mbedcloud.com/access/keys)
+- A endpoint running the [mbed cloud client quickstart example](https://github.com/mbartling/mbed-cloud-client-example/tree/simple-client-qs-ethernet)
 - Install the required packages `pip install -r requirements.txt`
 
 ### Use
-1. Put your [API key](https://connector.mbed.com/#accesskeys) into the app.py file, replace the following text
+1. Put your [API token](https://portal.mbedcloud.com/access/keys) into the app.py file, replace the following text
     ```python
     token = "Change Me" # replace with your API token
     ```
@@ -18,10 +18,10 @@ The quickstart webapp is meant to be paired with the [quickstart embedded app](h
 ```python
 python ./app.py
 ```
-3. Open a web page to the web.py server. Usually [//localhost:8080](//localhost:8080) will work. 
+3. Open a web page to the web.py server. Usually [//localhost:8002](//localhost:8002) will work. 
 4. Interact with the web page, blink the LED's, subscribe to the resources, click the button on the board and see the numbers tick up on the web app.
     {{TODO: insert gif's here}}
-5. Modify : go checkout the API for the [mbed-connector-api-python library](https://docs.mbed.com/docs/mbed-connector-api-python/en/latest/) and make your own applications!
+5. Modify : go checkout the API for the [mbed-cloud-sdk-python](https://github.com/ARMmbed/mbed-cloud-sdk-python) and make your own applications!
 
 
 ## Troubleshooting
@@ -34,5 +34,5 @@ This is most likely caused by not having the `requests[security]` package instal
 Dont worry about that warning message, it is not applicable to this demo, but likewise the warning message cannot be disabled. 
 
 ##### ERROR 500 on trying to run the app.py file
-Make sure you added your [Access Key](https://connector.mbed.com/#accesskeys) to the app. You can do this by either changing the value of the `token` variable in the app.py file or by setting the `ACCESS_KEY` environment variable to your access key. 
+Make sure you added your [API token](https://portal.mbedcloud.com/access/keys) to the app. You can do this by either changing the value of the `token` variable in the app.py file or by setting the `ACCESS_KEY` environment variable to your access key. 
 
