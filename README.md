@@ -1,4 +1,4 @@
-# mbed-connector-python-quickstart
+# mbed-cloud-sdk-python-quickstart
 This is a quickstart application for the [mbed-cloud-sdk-python](https://github.com/ARMmbed/mbed-cloud-sdk-python) package. 
 The goal of this application is to get the user up and running, using the mbed-cloud python sdk package and talking to devices through mbed cloud client in under 5 min, 5 steps or less.
 The quickstart webapp is meant to be paired with the [quickstart embedded app](https://github.com/mbartling/mbed-cloud-client-example/tree/simple-client-qs-ethernet). The quickstart web app will allow the user to visualize quickstart embedded devices and interact with them. 
