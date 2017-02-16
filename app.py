@@ -64,7 +64,7 @@ def disconnect():
     leave_room('room')
 
 @socket.on('subscribe_to_presses')
-def subscribeToPresses(data):
+def subscribe_to_presses(data):
     # Subscribe to all changes of resource /3200/0/5501 (button presses)
     logging.info('subscribe_to_presses: ', data)
 
@@ -86,7 +86,7 @@ def subscribeToPresses(data):
     })
 
 @socket.on('unsubscribe_to_presses')
-def unsubscribeToPresses(data):
+def unsubscribe_to_presses(data):
     logging.info('unsubscribe_to_presses: ', data)
 
     device_id = data["device_id"]
@@ -99,7 +99,7 @@ def unsubscribeToPresses(data):
     })
 
 @socket.on('get_presses')
-def getPresses(data):
+def get_presses(data):
     # Read data from GET resource /3200/0/5501 (num button presses)
     logging.info("get_presses ", data)
     value = api.get_resource_value(data['device_id'], BUTTON_RESOURCE_PATH)
@@ -110,7 +110,7 @@ def getPresses(data):
     })
 
 @socket.on('update_blink_pattern')
-def updateBlinkPattern(data):
+def update_blink_pattern(data):
     # Set data on PUT resource /3201/0/5853 (pattern of LED blink)
     logging.info('update_blink_pattern ', data)
     api.set_resource_value(data['device_id'], BLINK_PATTERN_RESOURCE_PATH, data['blink_pattern'])
