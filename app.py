@@ -18,6 +18,7 @@ from flask_socketio import leave_room
 from flask_socketio import SocketIO
 import logging
 from mbed_cloud.devices import DeviceAPI
+import os
 import pybars              # use to fill in handlebar templates
 import six
 import sys
@@ -31,9 +32,13 @@ BUTTON_RESOURCE_PATH = "/3200/0/5501"
 # in SDK - and thus we can't use eventlet or gevent.
 async_mode = 'threading'
 
+# API key from https://portal.mbedcloud.com/. Can also be set by setting the value
+# with ACCESS_KEY environment variable.
+api_key = ""
+
 app = Flask(__name__)
 socket = SocketIO(app, async_mode=async_mode, logger=True, engineio_logger=True)
-api = DeviceAPI()
+api = DeviceAPI({"api_key": os.environ.get("ACCESS_KEY", api_key)})
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 @app.route('/')
