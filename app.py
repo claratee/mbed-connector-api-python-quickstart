@@ -16,52 +16,59 @@ from flask_socketio import emit
 from flask_socketio import join_room
 from flask_socketio import leave_room
 from flask_socketio import SocketIO
+import logging
 from mbed_cloud.devices import DeviceAPI
 import pybars              # use to fill in handlebar templates
+import six
+import sys
 import threading
 
 BLINK_PATTERN_RESOURCE_PATH = "/3201/0/5853"
+BLINK_RESOURCE_PATH = "/3201/0/5850"
 BUTTON_RESOURCE_PATH = "/3200/0/5501"
 
+# Use 'threading' async_mode, as we don't use greenlet threads for background threads
+# in SDK - and thus we can't use eventlet or gevent.
+async_mode = 'threading'
+
 app = Flask(__name__)
-socket = SocketIO(app, async_mode='threading', logger=True, engineio_logger=True)
+socket = SocketIO(app, async_mode=async_mode, logger=True, engineio_logger=True)
 api = DeviceAPI()
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 @app.route('/')
 def index():
     devices = []
     for device, idx in api.list_connected_devices().iteritems():
-        print("Device Found: {}".format(device.id))
+        logging.info("Device Found: {}".format(device.id))
         value = api.get_resource_value(device.id, BLINK_PATTERN_RESOURCE_PATH)
         devices.append({
             'id': device.id,
-            'blinkPattern': value
+            'blink_pattern': value.decode('utf-8')
         })
 
     # Fill out html using handlebar template
     comp = pybars.Compiler()
     with open("./views/index.hbs", 'r') as fh:
-        source = unicode(fh.read())
-        template = comp.compile(source)
+        template = comp.compile(six.u(fh.read()))
         return "".join(template({'devices': devices}))
 
 @socket.on('connect')
 def connect():
-    print('connect ')
+    logging.info('connect ')
     join_room('room')
 
 @socket.on('disconnect')
 def disconnect():
-    print('Disconnect')
+    logging.info('Disconnect')
     leave_room('room')
 
 @socket.on('subscribe_to_presses')
 def subscribeToPresses(data):
     # Subscribe to all changes of resource /3200/0/5501 (button presses)
-    print('subscribe_to_presses: ', data)
+    logging.info('subscribe_to_presses: ', data)
 
-    # Note this is misspelled
-    device_id = data['endpointName']
+    device_id = data['device_id']
     eq = api.add_subscription(device_id, BUTTON_RESOURCE_PATH)
 
     # Get current value
@@ -72,49 +79,56 @@ def subscribeToPresses(data):
     t.daemon = True
     t.start()
 
-    print("Subscribed Successfully!")
-    emit('subscribed-to-presses')
-
+    logging.info("Subscribed Successfully!")
+    emit('presses', {
+        'device_id': device_id,
+        'value': current_value.decode('utf-8')
+    })
 
 @socket.on('unsubscribe_to_presses')
 def unsubscribeToPresses(data):
-    print('unsubscribe_to_presses: ', data)
-    api.delete_subscription(data['endpointName'], BUTTON_RESOURCE_PATH)
-    print("Unsubscribed Successfully!")
-    emit('unsubscribed-to-presses', {"endpointName": data['endpointName'], "value": 'True'})
+    logging.info('unsubscribe_to_presses: ', data)
 
+    device_id = data["device_id"]
+    api.delete_subscription(device_id, BUTTON_RESOURCE_PATH)
+    logging.info("Unsubscribed Successfully!")
+
+    emit('unsubscribed-to-presses', {
+        "device_id": device_id,
+        "value": 'True'
+    })
 
 @socket.on('get_presses')
 def getPresses(data):
     # Read data from GET resource /3200/0/5501 (num button presses)
-    print("get_presses ", data)
-    value = api.get_resource_value(data['endpointName'], BUTTON_RESOURCE_PATH)
+    logging.info("get_presses ", data)
+    value = api.get_resource_value(data['device_id'], BUTTON_RESOURCE_PATH)
 
     emit('presses', {
-        "endpointName": data['endpointName'],
-        "value": value
+        "device_id": data['device_id'],
+        "value": value.decode('utf-8')
     })
 
 @socket.on('update_blink_pattern')
 def updateBlinkPattern(data):
     # Set data on PUT resource /3201/0/5853 (pattern of LED blink)
-    print('update_blink_pattern ', data)
-    api.set_resource_value(data['endpointName'], BLINK_PATTERN_RESOURCE_PATH, data['blinkPattern'])
+    logging.info('update_blink_pattern ', data)
+    api.set_resource_value(data['device_id'], BLINK_PATTERN_RESOURCE_PATH, data['blink_pattern'])
 
 @socket.on('blink')
 def blink(data):
     # POST to resource /3201/0/5850 (start blinking LED)
-    print('blink: ', data)
-    api.set_resource_value(data['endpointName'], BLINK_PATTERN_RESOURCE_PATH, None)
+    logging.info('blink: ', data)
+    api.set_resource_value(data['device_id'], BLINK_RESOURCE_PATH, None)
 
 def subscription_handler(current_value, device_id, q):
     while True:
         new_value = q.get()
         if new_value != current_value:
-            print("Emitting new value: %s" % new_value)
+            logging.info("Emitting new value: %s" % new_value)
             socket.emit('presses', {
-                'endpointName': device_id,
-                'value': new_value
+                'device_id': device_id,
+                'value': new_value.decode('utf-8')
             })
             current_value = new_value
 

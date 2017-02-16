@@ -46,7 +46,7 @@
             <div class="small-12 medium-6 columns">
               <h4>LED Blink Pattern</h4>
               <div>
-                <input type="text" value="{{blinkPattern}}" class="blink-pattern">
+                <input type="text" value="{{blink_pattern}}" class="blink-pattern">
               </div>
               <div class="row">
                 <div class="small-6 columns">
@@ -76,19 +76,19 @@
             if ($(this).is(":checked")) {
               _this.find('.get-presses').prop('disabled', true);
               socket.emit('subscribe_to_presses', {
-                endpointName: _this.attr('id')
+                device_id: _this.attr('id')
               });
             } else {
               _this.find('.get-presses').prop('disabled', false);
               socket.emit('unsubscribe_to_presses', {
-                endpointName: _this.attr('id')
+                device_id: _this.attr('id')
               });
             }
           });
 
           _this.find('.get-presses').on('click', function() {
             socket.emit('get_presses', {
-              endpointName: _this.attr('id')
+              device_id: _this.attr('id')
             });
           });
 
@@ -98,8 +98,8 @@
 
           _this.find('.update-blink-pattern').on('click', function() {
             socket.emit('update_blink_pattern', {
-              endpointName: _this.attr('id'),
-              blinkPattern: _this.find('.blink-pattern').val()
+              device_id: _this.attr('id'),
+              blink_pattern: _this.find('.blink-pattern').val()
             });
 
             $(this).removeClass('active');
@@ -107,7 +107,7 @@
 
           _this.find('.blink').on('click', function() {
             socket.emit('blink', {
-              endpointName: _this.attr('id')
+              device_id: _this.attr('id')
             });
           });
         });
@@ -115,7 +115,7 @@
 
         socket.on('presses', function (data) {
           console.log('presses', data);
-          $('#' + data.endpointName + ' .presses-value').html(data.value);
+          $('#' + data.device_id + ' .presses-value').html(data.value);
         });
 
         socket.on('subscribed-to-presses', function (data) {
