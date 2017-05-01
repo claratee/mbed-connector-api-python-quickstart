@@ -17,7 +17,8 @@ from flask_socketio import join_room
 from flask_socketio import leave_room
 from flask_socketio import SocketIO
 import logging
-from mbed_cloud.devices import DeviceAPI
+from mbed_cloud.connect import ConnectAPI
+
 import os
 import pybars              # use to fill in handlebar templates
 import six
@@ -38,13 +39,14 @@ api_key = ""
 
 app = Flask(__name__)
 socket = SocketIO(app, async_mode=async_mode, logger=True, engineio_logger=True)
-api = DeviceAPI({"api_key": os.environ.get("ACCESS_KEY", api_key)})
+#api = DeviceAPI({"api_key": os.environ.get("ACCESS_KEY", api_key)})
+api = ConnectAPI({"api_key": os.environ.get("ACCESS_KEY", api_key)})
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 @app.route('/')
 def index():
     devices = []
-    for device, idx in api.list_connected_devices().iteritems():
+    for device, idx in api.list_connected_devices():
         logging.info("Device Found: {}".format(device.id))
         value = api.get_resource_value(device.id, BLINK_PATTERN_RESOURCE_PATH)
         devices.append({
@@ -138,5 +140,5 @@ def subscription_handler(current_value, device_id, q):
             current_value = new_value
 
 if __name__ == "__main__":
-    api.start_long_polling()
+    api.start_notifications()
     socket.run(app, host='127.0.0.1', port=8002)
